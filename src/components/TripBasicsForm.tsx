@@ -5,6 +5,7 @@ import { Input, Select, Button, Toggle } from "./UI";
 import { AutocompleteInput } from "./AutocompleteInput";
 import { TripBasics, TravelStyle } from "@/lib/schema";
 import { PlaceSuggestion } from "@/lib/places";
+import DatePicker from "./DatePicker";
 
 interface TripBasicsFormProps {
   onSubmit: (basics: TripBasics, style: TravelStyle) => void;
@@ -161,30 +162,11 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
                 -
               </button>
               
-              <div 
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => {
-                  console.log('🖱️ Start date field clicked');
-                  const dateInput = document.getElementById('startDateInput') as HTMLInputElement;
-                  if (dateInput && 'showPicker' in dateInput) {
-                    console.log('🎯 Calling showPicker');
-                    dateInput.showPicker();
-                  }
-                }}
-              >
-                {new Date(basics.startDate).toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </div>
-              <input
-                id="startDateInput"
-                type="date"
+              <DatePicker
                 value={basics.startDate}
-                onChange={(e) => setBasics({ ...basics, startDate: e.target.value })}
-                min={getTodayString()}
-                className="w-0 h-0 opacity-0 absolute"
+                onChange={(date) => setBasics({ ...basics, startDate: date })}
+                minDate={getTodayString()}
+                className="flex-1"
               />
               
               <button
@@ -228,33 +210,13 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
                 -
               </button>
               
-              <div 
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => {
-                  console.log('🖱️ End date field clicked');
-                  const dateInput = document.getElementById('endDateInput') as HTMLInputElement;
-                  if (dateInput && 'showPicker' in dateInput) {
-                    console.log('🎯 Calling showPicker');
-                    dateInput.showPicker();
-                  }
-                }}
-              >
-                <div>{new Date(basics.endDate).toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}</div>
-                <div className="text-sm text-gray-600">
-                  {Math.ceil((new Date(basics.endDate).getTime() - new Date(basics.startDate).getTime()) / (1000 * 60 * 60 * 24))} Days
-                </div>
-              </div>
-              <input
-                id="endDateInput"
-                type="date"
+              <DatePicker
                 value={basics.endDate}
-                onChange={(e) => setBasics({ ...basics, endDate: e.target.value })}
-                min={basics.startDate}
-                className="w-0 h-0 opacity-0 absolute"
+                onChange={(date) => setBasics({ ...basics, endDate: date })}
+                minDate={basics.startDate}
+                className="flex-1"
+                showDuration={true}
+                startDate={basics.startDate}
               />
               
               <button
