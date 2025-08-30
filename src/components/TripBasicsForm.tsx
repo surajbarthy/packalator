@@ -25,12 +25,27 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
     return date.toISOString().split('T')[0];
   };
 
+  const getNextDayString = () => {
+    const today = new Date();
+    const nextDay = new Date(today);
+    nextDay.setDate(today.getDate() + 1);
+    return nextDay.toISOString().split('T')[0];
+  };
+
+  const calculateDuration = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
 
   const [basics, setBasics] = useState<TripBasics>({
     destination: "",
-    startDate: getTodayString(), // Default to today
-    endDate: getDateFromToday(3), // Default to 3 days from today
+    startDate: getTodayString(),
+    endDate: getNextDayString(),
+    purpose: "leisure"
   });
 
   // Note: selectedPlace is available for future use in enhanced packing logic
@@ -146,13 +161,31 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
                 -
               </button>
               
-              <div className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium">
+              <div 
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  console.log('🖱️ Start date field clicked');
+                  const dateInput = document.getElementById('startDateInput') as HTMLInputElement;
+                  if (dateInput && 'showPicker' in dateInput) {
+                    console.log('🎯 Calling showPicker');
+                    dateInput.showPicker();
+                  }
+                }}
+              >
                 {new Date(basics.startDate).toLocaleDateString('en-US', {
                   weekday: 'short',
                   month: 'short',
                   day: 'numeric'
                 })}
               </div>
+              <input
+                id="startDateInput"
+                type="date"
+                value={basics.startDate}
+                onChange={(e) => setBasics({ ...basics, startDate: e.target.value })}
+                min={getTodayString()}
+                className="w-0 h-0 opacity-0 absolute"
+              />
               
               <button
                 type="button"
@@ -195,7 +228,17 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
                 -
               </button>
               
-              <div className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium flex items-center justify-between">
+              <div 
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 font-medium flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  console.log('🖱️ End date field clicked');
+                  const dateInput = document.getElementById('endDateInput') as HTMLInputElement;
+                  if (dateInput && 'showPicker' in dateInput) {
+                    console.log('🎯 Calling showPicker');
+                    dateInput.showPicker();
+                  }
+                }}
+              >
                 <div>{new Date(basics.endDate).toLocaleDateString('en-US', {
                   weekday: 'short',
                   month: 'short',
@@ -205,6 +248,14 @@ export function TripBasicsForm({ onSubmit, isLoading }: TripBasicsFormProps) {
                   {Math.ceil((new Date(basics.endDate).getTime() - new Date(basics.startDate).getTime()) / (1000 * 60 * 60 * 24))} Days
                 </div>
               </div>
+              <input
+                id="endDateInput"
+                type="date"
+                value={basics.endDate}
+                onChange={(e) => setBasics({ ...basics, endDate: e.target.value })}
+                min={basics.startDate}
+                className="w-0 h-0 opacity-0 absolute"
+              />
               
               <button
                 type="button"
