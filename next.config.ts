@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   experimental: {
     appDir: true,
   },
+  // Ensure proper base path for GitHub Pages
+  basePath: process.env.NODE_ENV === 'production' ? '/packalator' : '',
 };
 
 export default nextConfig;
